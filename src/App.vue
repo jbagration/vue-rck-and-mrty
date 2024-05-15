@@ -2,23 +2,23 @@
   <div id="app">
     <button @click="goHome" class="button">Home</button>
     <nav class="filter-nav">
-      <!-- Форма для фильтрации по имени и статусу -->
-      <input type="text" v-model="filters.name" placeholder="Name">
-      <select v-model="filters.status">
+      <input type="text" v-model="filters.name" placeholder="Name" class="filter-input">
+      <select v-model="filters.status" class="filter-select">
         <option value="">All</option>
         <option value="Alive">Alive</option>
         <option value="Dead">Dead</option>
         <option value="Unknown">Unknown</option>
       </select>
-      <button @click="applyFilters">Apply</button>
+      <button @click="applyFilters" class="filter-button">Apply</button>
     </nav>
     <div class="btn-container">
-      <button :disabled="page <= 1" @click="firstPage">First Page</button>
-      <button :disabled="page <= 1" @click="prevPage">Prev {{ page > 1 ? page - 1 : 1 }}</button>
-      <button :disabled="!hasMorePages" @click="nextPage">Next {{ page + 1 }}</button>
-      <button :disabled="!hasMorePages" @click="lastPage">Last Page</button>
+      <button :disabled="page <= 1" @click="firstPage" class="nav-button">First Page</button>
+      <button :disabled="page <= 1" @click="prevPage" class="nav-button">Prev {{ page > 1 ? page - 1 : 1 }}</button>
+      <button :disabled="!hasMorePages" @click="nextPage" class="nav-button">Next {{ page + 1 }}</button>
+      <button :disabled="!hasMorePages" @click="lastPage" class="nav-button">Last Page</button>
     </div>
     <div class="container">
+      <div v-if="loading" class="loading">Loading...</div>
       <router-link
         v-for="event in events"
         :key="event.id"
@@ -26,7 +26,7 @@
         class="event-link"
       >
         <div class="event-card">
-          <img :src="event.image" />
+          <img :src="event.image" alt="Character Image" class="event-image"/>
           <h4>{{ event.name }}</h4>
           <div class="status">
             <span v-if="event.status === 'Dead'" class="status-icon-r"></span>
@@ -35,8 +35,8 @@
           </div>
         </div>
       </router-link>
-<router-view :results="results" />
     </div>
+    <router-view :results="results" />
   </div>
 </template>
 
@@ -56,6 +56,9 @@ export default {
       hasMorePages: true,
       loading: false // Add loading state
     };
+  },
+  created() {
+    this.getPage();
   },
   methods: {
     async applyFilters() {
@@ -120,53 +123,127 @@ export default {
 
 <style>
 #app {
-	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	text-align: center;
-	color: #333;
-	background-color: #e7e8e6;
-	padding: 20px;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  color: #333;
+  background-color: #e7e8e6;
+  padding: 20px;
 }
 
 .filter-nav {
-	margin-top: 20px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
-.filter-form {
-	display: flex;
-	align-items: center;
+.filter-input, .filter-select, .filter-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: all 0.3s ease;
 }
 
-.filter-input,
-.filter-select,
+.filter-input, .filter-select {
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
 .filter-button {
-	padding: 8px 16px;
-	border-radius: 4px;
-	font-size: 14px;
+  background-color: #5cc70c;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-.filter-input,
-.filter-select {
-	border: 1px solid #ccc;
-	margin-right: 10px;
+.filter-button:hover {
+  background-color: #4aad09;
 }
 
 .btn-container {
-	margin-top: 20px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
-.prev-button,
-.next-button {
-	background-color: #5cc70c;
-	color: white;
-	border: none;
-	padding: 8px 16px;
-	border-radius: 4px;
-	cursor: pointer;
-	transition: background-color 0.3s;
-	margin: 0 10px;
+.nav-button {
+  background-color: #5cc70c;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
+.nav-button:disabled {
+  background-color: #ccc;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: #4aad09;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.event-card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.event-image {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.status-icon-r {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: red;
+  margin-right: 5px;
+}
+
+.status-icon-g {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: green;
+  margin-right: 5px;
+}
+
+.loading {
+  font-size: 24px;
+  color: #5cc70c;
+  margin-top: 20px;
+  animation: blinker 1.5s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
 </style>
