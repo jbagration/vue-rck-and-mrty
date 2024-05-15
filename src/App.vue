@@ -2,6 +2,7 @@
   <div id="app">
     <button @click="goHome" class="button">Home</button>
     <nav class="filter-nav">
+      <!-- Форма для фильтрации по имени и статусу -->
       <input type="text" v-model="filters.name" placeholder="Name" class="filter-input">
       <select v-model="filters.status" class="filter-select">
         <option value="">All</option>
@@ -18,7 +19,6 @@
       <button :disabled="!hasMorePages" @click="lastPage" class="nav-button">Last Page</button>
     </div>
     <div class="container">
-      <div v-if="loading" class="loading">Loading...</div>
       <router-link
         v-for="event in events"
         :key="event.id"
@@ -26,7 +26,7 @@
         class="event-link"
       >
         <div class="event-card">
-          <img :src="event.image" alt="Character Image" class="event-image"/>
+          <img :src="event.image" />
           <h4>{{ event.name }}</h4>
           <div class="status">
             <span v-if="event.status === 'Dead'" class="status-icon-r"></span>
@@ -35,8 +35,8 @@
           </div>
         </div>
       </router-link>
+      <router-view :results="results" />
     </div>
-    <router-view :results="results" />
   </div>
 </template>
 
@@ -56,9 +56,6 @@ export default {
       hasMorePages: true,
       loading: false // Add loading state
     };
-  },
-  created() {
-    this.getPage();
   },
   methods: {
     async applyFilters() {
@@ -138,27 +135,47 @@ export default {
   gap: 10px;
 }
 
-.filter-input, .filter-select, .filter-button {
+.filter-input {
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 20px;
   font-size: 14px;
-  transition: all 0.3s ease;
+  border: 1px solid #ccc;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
-.filter-input, .filter-select {
+.filter-input:focus {
+  border-color: #5cc70c;
+  box-shadow: 0 0 5px rgba(92, 199, 12, 0.5);
+  outline: none;
+}
+
+.filter-select {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
   border: 1px solid #ccc;
-  margin-right: 10px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-select:focus {
+  border-color: #5cc70c;
+  box-shadow: 0 0 5px rgba(92, 199, 12, 0.5);
+  outline: none;
 }
 
 .filter-button {
   background-color: #5cc70c;
   color: white;
   border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .filter-button:hover {
   background-color: #4aad09;
+  transform: translateY(-2px);
 }
 
 .btn-container {
