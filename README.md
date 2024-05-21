@@ -1,2 +1,1 @@
-# Company D/ta H/roes
-# Test task R/ck and M/rty
+just a test use of vue and the api for creating cards
